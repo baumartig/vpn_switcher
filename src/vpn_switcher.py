@@ -51,17 +51,19 @@ def switch_config(config_id, country, out_channel):
 	global error
 
 	print "Switching to config: %s for country: %s" % (config_id, country)
+	error = False
 	switching = True
+
 	if current_out_channel:
 		GPIO.output(current_out_channel, GPIO.LOW)
 	subprocess.call("service openvpn stop" , shell=True)
 	if config_id:
 		subprocess.call("service openvpn start %s" % (config_id) , shell=True)
-		time.sleep(5)
+		time.sleep(10)
 
 	# Check the correct country
 	current_checks = 0
-	max_checks = 7
+	max_checks = 10
 	result = False
 	
 	if not country:
@@ -72,11 +74,10 @@ def switch_config(config_id, country, out_channel):
 		current_checks = current_checks + 1
 		result = check_country(country)
 		if not result:
-			time.sleep(4)
+			time.sleep(5)
 	
 	# Switching the out LED
 	if result:
-		error = False
 		if out_channel:
 			current_out_channel = out_channel
 			GPIO.output(current_out_channel, GPIO.HIGH)
