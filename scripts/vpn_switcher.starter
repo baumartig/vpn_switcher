@@ -4,6 +4,7 @@
 case "$1" in
 start)
 echo "Starting VPN Switcher ... "
+killall vpn_switcher
 /usr/bin/vpn_switcher > /dev/null &
 ;;
 stop)
