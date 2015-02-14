@@ -1,4 +1,17 @@
 #! /bin/sh
+
+### BEGIN INIT INFO
+# Provides: vpn_switcher
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: VPN switcher service
+# Description: This script will enable starting and stopping of
+# 		OpenVPN tunnels as specified
+#              in /etc/vpn_switcher/vpn_switcher.conf 
+### END INIT INFO
+
 # /etc/init.d/vpn_switcher
 
 case "$1" in
