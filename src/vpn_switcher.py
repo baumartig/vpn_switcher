@@ -87,7 +87,7 @@ def switch_config(config_id, country, out_channel):
 	switching = False
 
 def check_country(country):
-	r = requests.get("http://ipinfo.io/json")
+	r = requests.get("http://www.trackip.net/ip?json")
 	json_result = r.json()
 	result_country = json_result["country"]
 	print "Checking country: %s found country: %s " % (country, result_country)
