@@ -14,15 +14,21 @@
 
 # /etc/init.d/vpn_switcher
 
+PIDFILE = /var/run/vpn_switcher.pid
+
 case "$1" in
 start)
 echo "Starting VPN Switcher ... "
-killall vpn_switcher
-/usr/bin/vpn_switcher > /dev/null &
+#killall vpn_switcher
+start-stop-daemon --start --quiet --background \
+	--pidfile $PIDFILE --make-pidfile \
+	--exec /usr/bin/vpn_switcher
+#/usr/bin/vpn_switcher > /dev/null &
 ;;
 stop)
 echo "Killing VPN Switcher ..."
-killall vpn_switcher
+start-stop-daemon --stop --pidfile $PIDFILE
+#killall vpn_switcher
 ;;
 *)
 echo "Usage: /etc/init.d/vpn_switcher {start|stop}"

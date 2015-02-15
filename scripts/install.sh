@@ -16,3 +16,6 @@ fi
 cp vpn_switcher.starter /etc/init.d/vpn_switcher
 chown root:root /etc/init.d/vpn_switcher
 chmod 755 /etc/init.d/vpn_switcher
+
+# populate the startup script
+update-rc.d vpn_switcher defaults
