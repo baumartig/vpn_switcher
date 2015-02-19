@@ -5,7 +5,10 @@ import json
 import requests
 import subprocess
 import urllib2
+import logging
 from pprint import pprint
+
+logging.basicConfig(filename='/var/log/vpn_switcher.log',level=logging.DEBUG)
 
 wait_channel = None
 vpn_configs = []
@@ -33,7 +36,7 @@ def setup():
 		out_channel = vpn_config["out_channel"]
 		country = vpn_config["country"]
 		config_id = vpn_config["config_id"]
-		print "Setup channels for config %s in:%s out:%s" % (config_id, in_channel, out_channel)
+		logging.info("Setup channels for config %s in:%s out:%s" % (config_id, in_channel, out_channel))
 		if in_channel:
 			GPIO.setup(in_channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
 			GPIO.add_event_detect(in_channel, GPIO.RISING, callback=switch_called, bouncetime=300)
@@ -50,7 +53,7 @@ def switch_config(config_id, country, out_channel):
 	global switching
 	global error
 
-	print "Switching to config: %s for country: %s" % (config_id, country)
+	logging.info("Switching to config: %s for country: %s" % (config_id, country))
 	error = False
 	switching = True
 
@@ -82,6 +85,7 @@ def switch_config(config_id, country, out_channel):
 			current_out_channel = out_channel
 			GPIO.output(current_out_channel, GPIO.HIGH)
 	else:
+		logging.error("Could not verify country: %s" % (country))
 		error = True
 	
 	switching = False
@@ -90,11 +94,11 @@ def check_country(country):
 	r = requests.get("http://www.trackip.net/ip?json")
 	json_result = r.json()
 	result_country = json_result["country"]
-	print "Checking country: %s found country: %s " % (country, result_country)
+	logging.info("Checking country: %s found country: %s " % (country, result_country))
 	return result_country and result_country.lower() == country.lower() 
 
 def switch_called(channel):
-	print('Edge detected on channel %s'%channel)
+	logging.info('Edge detected on channel %s'%channel)
 	if not switching:		
 		for config in vpn_configs:
 			in_channel = config["in_channel"]
