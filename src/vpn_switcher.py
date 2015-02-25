@@ -8,7 +8,6 @@ import urllib2
 import logging
 from pprint import pprint
 
-logging.basicConfig(filename='/var/log/vpn_switcher.log',level=logging.DEBUG)
 
 wait_channel = None
 vpn_configs = []
@@ -19,6 +18,7 @@ error = False
 
 
 def setup():
+	logging.basicConfig(filename='/var/log/vpn_switcher.log',level=logging.DEBUG)
 	global wait_channel
 	global vpn_configs
 
@@ -95,7 +95,14 @@ def check_country(country):
 	json_result = r.json()
 	result_country = json_result["country"]
 	logging.info("Checking country: %s found country: %s " % (country, result_country))
-	return result_country and result_country.lower() == country.lower() 
+	success = result_country and result_country.lower() == country.lower()
+	if not success:
+		r = requests.get("http://ipinfo.io/json")
+		json_result = r.json()
+		result_country = json_result["country"]
+		logging.info("Checking country: %s found country: %s " % (country, result_country))
+		success = result_country and result_country.lower() == country.lower()
+	return success 
 
 def switch_called(channel):
 	logging.info('Edge detected on channel %s'%channel)
@@ -108,17 +115,18 @@ def switch_called(channel):
 			if in_channel == channel:
 				switch_config(config_id, country, out_channel)
 
-setup()
-while True:
-	time.sleep(0.1)
-	if error:
-		if GPIO.input(wait_channel) == GPIO.LOW:
-			GPIO.output(wait_channel, GPIO.HIGH)
-	else:
-		# Blink if switching
-		if switching or not current_out_channel:
-			GPIO.output(wait_channel, not GPIO.input(wait_channel))
+if __name__ == '__main__':
+	setup()
+	while True:
+		time.sleep(0.1)
+		if error:
+			if GPIO.input(wait_channel) == GPIO.LOW:
+				GPIO.output(wait_channel, GPIO.HIGH)
 		else:
-			GPIO.output(wait_channel, GPIO.LOW)
+			# Blink if switching
+			if switching or not current_out_channel:
+				GPIO.output(wait_channel, not GPIO.input(wait_channel))
+			else:
+				GPIO.output(wait_channel, GPIO.LOW)
 	
-GPIO.cleanup()
+	GPIO.cleanup()
