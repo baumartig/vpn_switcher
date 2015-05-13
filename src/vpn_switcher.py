@@ -30,6 +30,7 @@ def setup():
 	vpn_configs = config["vpn_configs"]
 
 	GPIO.setmode(GPIO.BOARD)
+	GPIO.setwarnings(False)
 	GPIO.setup(wait_channel, GPIO.OUT )
 	for vpn_config in vpn_configs:
 		in_channel = vpn_config["in_channel"]
@@ -66,7 +67,7 @@ def switch_config(config_id, country, out_channel):
 
 	# Check the correct country
 	current_checks = 0
-	max_checks = 10
+	max_checks = 5 
 	result = False
 	
 	if not country:
