@@ -1,5 +1,4 @@
 #! /usr/bin/python
-import RPi.GPIO as GPIO
 import time
 import json
 import requests
@@ -8,11 +7,17 @@ import urllib2
 import logging
 from pprint import pprint
 
+try:
+	import RPi.GPIO as GPIO
+except ImportError:
+	logging.info("No Module GPIO present")
+
 
 wait_channel = None
 vpn_configs = []
 current_config_id = None
 current_out_channel = None
+current_country = None
 switching = False
 error = False
 
@@ -50,7 +55,9 @@ def setup():
 			
 
 def switch_config(config_id, country, out_channel):
+	global current_config_id
 	global current_out_channel
+	global current_country
 	global switching
 	global error
 
@@ -83,6 +90,8 @@ def switch_config(config_id, country, out_channel):
 	# Switching the out LED
 	if result:
 		if out_channel:
+			current_config_id = config_id
+			current_country = country
 			current_out_channel = out_channel
 			GPIO.output(current_out_channel, GPIO.HIGH)
 	else:
@@ -115,9 +124,8 @@ def switch_called(channel):
 			config_id = config["config_id"]
 			if in_channel == channel:
 				switch_config(config_id, country, out_channel)
-
-if __name__ == '__main__':
-	setup()
+				
+def main_loop():
 	while True:
 		time.sleep(0.1)
 		if error:
@@ -131,3 +139,7 @@ if __name__ == '__main__':
 				GPIO.output(wait_channel, GPIO.LOW)
 	
 	GPIO.cleanup()
+
+if __name__ == '__main__':
+	setup()
+	main_loop()
