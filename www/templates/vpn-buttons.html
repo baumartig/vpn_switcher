@@ -1,17 +1,39 @@
 <link rel="import" href="/www/bower_components/polymer/polymer.html">
 <link rel="import" href="/www/bower_components/paper-button/paper-button.html">
 
+<link rel="import" href="/www/bower_components/iron-ajax/iron-ajax.html">
+
 <dom-module id="vpn-buttons">
 
   <style>
   </style>
     
   <template>
-      <paper-button raised>Test</paper-button>
+      <iron-ajax auto url="/vpns" handle-as="json" on-response="handleResponse" on-error="showError" ></iron-ajax>
+      <iron-ajax id="ajaxSwitchVPN" url="/active" method="PUT" handle-as="json" on-response="handleResponse" on-error="showError"></iron-ajax>
+      
+      <template is="dom-repeat" items="[[_vpns]]" as="vpn">
+          <paper-button raised config_id="[[vpn.vpn_config]]" on-tab="switchVPN">[[vpn.country]]</paper-button>
+      </template>
   </template>
 </dom-module>
 <script>
      Polymer({
-        is: 'vpn-buttons'
+        is: 'vpn-buttons',
+        properties: {
+            _vpns: {
+                type: Array
+            }
+        },
+        switchVPN: function(e) {
+            console.log("switchVPN");
+            var config_id = e.target.config_id;
+            this.$.ajaxSwitchVPN.body = '{config_id:' + config_id + '}';
+            this.$.ajaxSwitchVPN.generateRequest();
+        },
+        
+        handleResponse: function(response) {
+            console.log(response);
+        }
      })
 </script> 

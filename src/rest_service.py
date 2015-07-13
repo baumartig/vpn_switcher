@@ -31,6 +31,8 @@ def set_active():
             vpn[0]["country"],
             vpn[0]["out_channel"]
         )
+    if vpn_switcher.error:
+        abort(400)
     return jsonify({'active-id': vpn_switcher.current_config_id})
     
 @app.route('/vpns', methods=['GET'])
