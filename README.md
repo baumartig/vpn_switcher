@@ -1,4 +1,11 @@
 
+DEPRECATED
+--------
+
+I have stoped to work on this project and moved to a new version and architecture. See here:
+* [vpn_switcher-server](https://github.com/baumartig/vpn_switcher-server)
+* [vpn_switcher-webclient](https://github.com/baumartig/vpn_switcher-webclient)
+
 Targets of this project
 --------
 
